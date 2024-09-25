@@ -1,14 +1,110 @@
-const contractAddress = '0xYourDeployedContractAddress'; // Contract address ที่ deploy บน BSC Testnet
+const contractAddress = '0x55Fcf47886C508F2269bB14D48cBfddd819E3bBe'; // Contract address that is deployed on BSC Testnet
 const contractABI = [
-    // ใส่ ABI ที่คอมไพล์จาก ChatDapp.sol หลัง deploy เรียบร้อยแล้ว
-];
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "content",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "NewMessage",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_content",
+				"type": "string"
+			}
+		],
+		"name": "sendMessage",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllMessages",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "content",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct ChatDapp.Message[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "messages",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "content",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
 
-// เชื่อมต่อกับ MetaMask
+// Connect to MetaMask
 async function connectWallet() {
     if (window.ethereum) {
         try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const account = accounts[0]; // ที่อยู่ของบัญชีผู้ใช้
+            const account = accounts[0]; // User's account address
             console.log("Connected account:", account);
             return account;
         } catch (error) {
@@ -19,7 +115,7 @@ async function connectWallet() {
     }
 }
 
-// แสดงที่อยู่ผู้ใช้ (Address ของ MetaMask)
+// Show user's address (MetaMask address)
 async function connectAndShowAddress() {
     const account = await connectWallet();
     if (account) {
@@ -27,24 +123,24 @@ async function connectAndShowAddress() {
     }
 }
 
-// ส่งข้อความผ่าน MetaMask
+// Send a message through MetaMask
 async function sendMessage(content) {
-    if (!content) return;
+    if (!content) return; // Ensure content is not empty
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
     try {
         const tx = await contract.sendMessage(content);
-        await tx.wait(); // รอให้ transaction เสร็จสิ้น
+        await tx.wait(); // Wait for the transaction to be mined
         console.log("Message sent:", content);
-        loadMessages(); // โหลดข้อความทั้งหมดใหม่หลังส่ง
+        loadMessages(); // Reload messages after sending
     } catch (error) {
         console.error("Failed to send message:", error);
     }
 }
 
-// โหลดข้อความทั้งหมดและแสดงในหน้าเว็บ
+// Load all messages and display them on the web page
 async function loadMessages() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(contractAddress, contractABI, provider);
@@ -52,14 +148,14 @@ async function loadMessages() {
     try {
         const messages = await contract.getAllMessages();
         const chatWindow = document.getElementById("chatWindow");
-        chatWindow.innerHTML = ''; // เคลียร์ข้อความเก่า
+        chatWindow.innerHTML = ''; // Clear old messages
 
         messages.forEach(message => {
-            const sender = message.sender; // Address ของผู้ใช้ที่ส่งข้อความ
-            const content = message.content; // เนื้อหาข้อความ
-            const timestamp = new Date(message.timestamp * 1000).toLocaleString(); // แปลง timestamp เป็นวันที่
+            const sender = message.sender; // User's address that sent the message
+            const content = message.content; // Message content
+            const timestamp = new Date(message.timestamp * 1000).toLocaleString(); // Convert timestamp to date
 
-            // แสดงผลข้อความพร้อมกับ Address ของผู้ใช้
+            // Display the message along with the sender's address
             const messageElement = document.createElement('p');
             messageElement.innerText = `[${timestamp}] ${sender}: ${content}`;
             chatWindow.appendChild(messageElement);
@@ -69,5 +165,14 @@ async function loadMessages() {
     }
 }
 
-// เมื่อโหลดหน้าเว็บเสร็จ ให้ดึงข้อความทั้งหมดมาแสดง
-loadMessages();
+// Execute loadMessages when the web page is loaded
+window.onload = function() {
+    loadMessages();
+    connectAndShowAddress(); // Optionally, connect and show the address on page load
+};
+
+// Optional: If you want to hook up the sendMessage function to a button
+document.getElementById("sendMessageButton").addEventListener("click", () => {
+    const content = document.getElementById("messageInput").value; // Assuming there's an input field for message
+    sendMessage(content);
+});
