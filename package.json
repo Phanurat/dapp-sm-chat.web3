@@ -1,0 +1,10 @@
+{
+    "name": "dapp-chat",
+    "version": "1.0.0",
+    "description": "Decentralized chat Dapp on BSC Testnet",
+    "main": "index.js",
+    "dependencies": {
+      "ethers": "^5.5.3"
+    }
+  }
+  

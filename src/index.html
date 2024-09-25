@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Dapp</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <h2>Decentralized Chat Dapp</h2>
+
+    <!-- แสดงที่อยู่ผู้ใช้ที่ล็อกอิน -->
+    <div>
+        <p id="userAddress">Not connected</p>
+        <button onclick="connectAndShowAddress()">Connect Wallet</button>
+    </div>
+
+    <!-- หน้าต่างแชท -->
+    <div id="chatWindow" class="chat-window">
+        <!-- ข้อความจะถูกโหลดมาแสดงในส่วนนี้ -->
+    </div>
+
+    <!-- กล่องข้อความสำหรับส่ง -->
+    <input type="text" id="messageInput" placeholder="Enter your message" />
+    <button onclick="sendMessage(document.getElementById('messageInput').value)">Send Message</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.5.3/dist/ethers.min.js"></script>
+    <script src="./js/frontend.js"></script>
+</body>
+</html>
