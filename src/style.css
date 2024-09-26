@@ -1,22 +1,29 @@
- /* Style for the chat application */
- body {
+body {
     font-family: Arial, sans-serif;
     margin: 20px;
 }
 
 .chat-window {
-    border: 1px solid #ccc;
-    padding: 10px;
     height: 300px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-
-#messageInput {
-    width: 80%;
+    overflow-y: scroll;
+    border: 1px solid #000;
     padding: 10px;
+    margin-bottom: 20px;
 }
 
 button {
     padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    margin-right: 10px;
 }
